@@ -1,0 +1,12 @@
+{
+  "name": "game-library-desk",
+  "version": "1.0.0",
+  "description": "Game Library Desktop App",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "devDependencies": {
+    "electron": "^42.3.0"
+  }
+}

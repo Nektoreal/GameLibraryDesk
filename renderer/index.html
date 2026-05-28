@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<head>
+  <meta charset="UTF-8">
+  <title>GameLibraryTracker</title>
+</head>
+<body>
+  
+  <h2>Game Library Tracker</h2>
+  <!-- LOGIN SCREEN -->
+  <div id="login-screen">
+    <input id="username" placeholder="username"/><br><br>
+    <input id="password" placeholder="password" type="password"/><br><br>
+    <button onclick="login()">Login</button>
+    <p id="login-error" style="color: red;"></p>
+  </div>
+
+  <!-- MAIN SCREEN -->
+  <div id="main-screen" style="display: none;">
+    <p>Hi, <b id="username-display"></b>!</p>
+    <button onclick="logout()">Logout</button>
+    <hr>
+    <div id="games-list">Load games-list...</div>
+  </div>
+
+  <script src="app.js"></script>
+  
+</body>
+</html>
