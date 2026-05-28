@@ -1,6 +1,10 @@
 const API = 'http://localhost:8080';
 let token = null;
 
+let activeEntryId = null;
+let sessionStart = null;
+let timerInterval = null;
+
 async function login(){
   let url = API + '/api/auth/login';
 
@@ -19,8 +23,8 @@ async function login(){
   if(res.ok) {
     const data = await res.json();
     token = data.token;
+    showMainScreen(username);
   }
-  showMainScreen(username);
 }
 
 function showMainScreen(name) {
@@ -45,7 +49,10 @@ async function loadGames() {
   const gamesList = document.getElementById("games-list");
 
   gamesList.innerHTML = entries.map(entry => `
-    <p>${entry.game.title} <p>${entry.status}</p> </p>
+    <p>${entry.game.title} 
+      <p>${entry.status}</p> 
+    </p> 
+    <button onclick="startTracking('${entry.id}')">Start</button>
     `).join('')
 }
 
@@ -56,4 +63,35 @@ function logout(){
   document.getElementById('main-screen').style.display = 'none';
   //show login
   document.getElementById('login-screen').style.display = 'block';
+}
+
+function startTracking(entryId) {
+  activeEntryId = entryId;
+  sessionStart = new Date();
+
+  timerInterval = setInterval(() => {
+    const seconds = Math.floor((new Date() - sessionStart) / 1000);
+    console.log(seconds)
+  }, 1000);
+}
+
+async function stopTracking() {
+  let url = API + `/api/entries/${activeEntryId}/playtime`;
+  clearInterval(timerInterval);
+  let totalTime = Math.floor((new Date() - sessionStart)/1000);
+
+  const res = await fetch(url, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify({
+      seconds: totalTime
+    })
+  });
+
+  activeEntryId = null;
+  sessionStart = null;
+  timerInterval = null;
 }
