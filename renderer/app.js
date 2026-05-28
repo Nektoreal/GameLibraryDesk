@@ -1,3 +1,5 @@
+//like backend only for web
+
 const API = 'http://localhost:8080';
 let token = null;
 
@@ -34,8 +36,8 @@ function showMainScreen(name) {
   document.getElementById('login-screen').style.display = 'none';
   //Show main screen
   document.getElementById('main-screen').style.display = 'block';
-
   loadGames();
+
 }
 
 async function loadGames() {
@@ -54,6 +56,9 @@ async function loadGames() {
     </p> 
     <button onclick="startTracking('${entry.id}')">Start</button>
     `).join('')
+
+  window.electronAPI.sendGameList(entries);
+
 }
 
 function logout(){
@@ -73,6 +78,7 @@ function startTracking(entryId) {
     const seconds = Math.floor((new Date() - sessionStart) / 1000);
     console.log(seconds)
   }, 1000);
+
 }
 
 async function stopTracking() {
@@ -95,3 +101,11 @@ async function stopTracking() {
   sessionStart = null;
   timerInterval = null;
 }
+
+window.electronAPI.onGameDetected((event, entry) => {
+    startTracking(entry.id) 
+})
+
+window.electronAPI.onGameClosed((event, entry) => {
+    stopTracking(entry.id)
+})

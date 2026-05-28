@@ -8,5 +8,9 @@
   },
   "devDependencies": {
     "electron": "^42.3.0"
+  },
+  "dependencies": {
+    "ps-list": "^9.0.0",
+    "tasklist": "^6.0.0"
   }
 }
