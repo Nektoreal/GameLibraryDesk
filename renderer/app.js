@@ -84,6 +84,12 @@ function logout(){
 }
 
 function startTracking(entryId, gameTitle) {
+
+  console.log('startTracking called:', entryId, gameTitle)
+  const statusEl = document.getElementById('active-game-status')
+  console.log('status element:', statusEl)
+
+
   activeEntryId = entryId;
   sessionStart = new Date();
 
@@ -147,15 +153,17 @@ async function stopTracking() {
   activeEntryId = null;
   sessionStart = null;
   timerInterval = null;
+  loadGames()
 }
 
 
 window.electronAPI.onGameDetected((event, entry) => {
-    startTracking(entry.id, entry.game.title)
+  console.log('Game detected in app.js:', entry.game.title)
+  startTracking(entry.id, entry.game.title)
 })
 
 window.electronAPI.onGameClosed((event, entry) => {
-    stopTracking(entry.id)
+  stopTracking(entry.id)
 })
 
 window.electronAPI.onProcessList((event, names) => {

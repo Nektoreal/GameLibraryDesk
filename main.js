@@ -52,7 +52,6 @@ let gamesList = []
 
 ipcMain.on('games-list', (event, games) => {
   gamesList = games
-  console.log('Games received:', gamesList.length)
   autoMatchSteamGames()
   }
 )
@@ -62,12 +61,13 @@ function startProcessWatcher() {
     const {stdout} = await execPromise('tasklist'); //get in format: [{name: witcher3.exe},...]
     const names = stdout.toLowerCase().split('\n').map(line => line.split(' ')[0])// do in massiv format: ['chrome.exe', 'witcher3.exe',...]
     win.webContents.send('process-list', names)
-    const foundGame = gamesList.find(entry => names.includes(entry.game.processName))//looking in the list of games for one whose processName is among the running processes.
+    const foundGame = gamesList.find(entry => names.includes(entry.game.processName?.toLowerCase()))//looking in the list of games for one whose processName is among the running processes.
 
     console.log('Looking for:', gamesList.map(e => e.game.processName))
     console.log('Found:', foundGame ? foundGame.game.title : 'nothing')
 
     if (foundGame && activeGame === null) {
+      console.log('Sending game-detected, entry id:', foundGame.id)
       win.webContents.send('game-detected', foundGame)//send message to app.js like "game is detected, this is info about"
       activeGame = foundGame;
     }
@@ -151,9 +151,11 @@ function autoMatchSteamGames() {
   } 
 
   for (const entry of gamesList) {
+    console.log('Comparing:', entry.game.title, 'with Steam games')
     const match = steamGames.find(sg => 
       sg.name.toLowerCase() === entry.game.title.toLowerCase()
     )
+    console.log('Match:', match ? match.name : 'none')
 
     if (match && !entry.game.processName) {
       const data = JSON.stringify({ processName: match.exeName})
