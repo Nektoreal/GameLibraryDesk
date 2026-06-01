@@ -11,5 +11,7 @@ contextBridge.exposeInMainWorld('electronAPI', { //creates `window.electronAPI` 
 
   onProcessList: (callback) => ipcRenderer.on('process-list', callback),
 
-  sendGameList: (games) => ipcRenderer.send('games-list', games)
+  sendGameList: (games) => ipcRenderer.send('games-list', games),
+
+  sendToken: (token) => ipcRenderer.send('token', token)
 })

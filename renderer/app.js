@@ -26,6 +26,7 @@ async function login(){
   if(res.ok) {
     const data = await res.json();
     token = data.token;
+    window.electronAPI.sendToken(token)
     showMainScreen(username);
   }
 }
