@@ -40,6 +40,7 @@ function startProcessWatcher() {
   setInterval(async () => {
     const {stdout} = await execPromise('tasklist'); //get in format: [{name: witcher3.exe},...]
     const names = stdout.toLowerCase().split('\n').map(line => line.split(' ')[0])// do in massiv format: ['chrome.exe', 'witcher3.exe',...]
+    win.webContents.send('process-list', names)
     const foundGame = gamesList.find(entry => names.includes(entry.game.processName))//looking in the list of games for one whose processName is among the running processes.
 
     console.log('Looking for:', gamesList.map(e => e.game.processName))

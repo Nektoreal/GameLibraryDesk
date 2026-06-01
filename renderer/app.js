@@ -6,6 +6,7 @@ let token = null;
 let activeEntryId = null;
 let sessionStart = null;
 let timerInterval = null;
+let processList = [];
 
 async function login(){
   let url = API + '/api/auth/login';
@@ -59,7 +60,8 @@ async function loadGames() {
   const gamesList = document.getElementById("games-list");
 
   gamesList.innerHTML = entries.map(entry => `
-    <p>${entry.game.title} <input id="process-${entry.game.id}" placeholder="process.exe"/>
+    <p>${entry.game.title} <input id="process-${entry.game.id}" placeholder="process.exe" oninput="showSuggestions('${entry.game.id}', this.value)"/> 
+      <div id="suggestions-${entry.game.id}"></div>
       <button onclick="saveProcessName('${entry.game.id}', document.getElementById('process-${entry.game.id}').value)">Save</button>
       <p>${formatTime(entry.playtime)}</p> 
       <p>${entry.status}</p> 
@@ -91,6 +93,23 @@ function startTracking(entryId, gameTitle) {
     const seconds = Math.floor((new Date() - sessionStart) / 1000);
     document.getElementById('active-game-timer').innerHTML = formatTime(seconds)
   }, 1000);
+}
+
+function showSuggestions(gameId, value) {
+  if (!value) {
+    document.getElementById(`suggestions-${gameId}`).innerHTML = '';
+    return;
+  }
+  const filtered = processList.filter(name => name.includes(value.toLowerCase())).slice(0, 5)
+
+  document.getElementById(`suggestions-${gameId}`).innerHTML = filtered.map(name => `
+    <div onclick="selectProcess('${gameId}', '${name}')">${name}</div>
+  `).join('')
+}
+
+function selectProcess(gameId, name) {
+  document.getElementById(`process-${gameId}`).value = name;
+  document.getElementById(`suggestions-${gameId}`).innerHTML = '';
 }
 
  async function saveProcessName(gameId, processName) {
@@ -138,3 +157,6 @@ window.electronAPI.onGameClosed((event, entry) => {
     stopTracking(entry.id)
 })
 
+window.electronAPI.onProcessList((event, names) => {
+  processList = names
+})

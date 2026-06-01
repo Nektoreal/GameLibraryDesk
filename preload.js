@@ -9,5 +9,7 @@ contextBridge.exposeInMainWorld('electronAPI', { //creates `window.electronAPI` 
 
   onGameClosed: (callback) => ipcRenderer.on('game-closed', callback),
 
+  onProcessList: (callback) => ipcRenderer.on('process-list', callback),
+
   sendGameList: (games) => ipcRenderer.send('games-list', games)
 })
