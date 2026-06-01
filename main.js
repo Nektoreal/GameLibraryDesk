@@ -1,7 +1,7 @@
 //like backend with system
 
 //imports
-const { app, BrowserWindow, ipcMain, powerMonitor } = require('electron')
+const { app, BrowserWindow, ipcMain, powerMonitor, Tray, Menu, nativeImage, dialog } = require('electron')
 const path = require('path')
 
 const { exec } = require('child_process')
@@ -22,6 +22,8 @@ const EXCLUDED_EXE = [
   'unins000.exe', 'dxsetup.exe'
 ]
 
+let tray = null
+
 let activeGame = null
 let win = null;
 
@@ -29,6 +31,15 @@ let token = null;
 
 ipcMain.on('token', (event, t) => {
   token = t;
+})
+
+ipcMain.handle('open-file-dialog', async () => {
+    const result = await dialog.showOpenDialog(win, {
+        properties: ['openFile'],
+        filters: [{ name: 'Executable', extensions: ['exe'] }]
+    })
+    if (result.canceled) return null
+    return path.basename(result.filePaths[0])
 })
 
 function createWindow() {
@@ -43,6 +54,30 @@ function createWindow() {
   })
 
   win.loadFile('renderer/index.html')
+//get a request for close window
+  win.on('close', (e) => {
+    e.preventDefault()
+    win.hide()
+  })
+
+  //Create task in tray
+  const icon = nativeImage.createEmpty()
+  tray = new Tray(icon)
+  tray.setToolTip('Game Tracker')
+
+  const menu = Menu.buildFromTemplate([
+    { label: 'Show', click: () => win.show() },
+    {type: 'separator' },
+    {label: 'Quit', click: () => {
+      win.destroy()
+      app.quit()
+    }}
+  ])
+
+  tray.setContextMenu(menu)
+
+  tray.on('click', () => win.show())
+
   startProcessWatcher();
 }
 

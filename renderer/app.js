@@ -61,14 +61,20 @@ async function loadGames() {
   const gamesList = document.getElementById("games-list");
 
   gamesList.innerHTML = entries.map(entry => `
-    <p>${entry.game.title} <input id="process-${entry.game.id}" placeholder="process.exe" oninput="showSuggestions('${entry.game.id}', this.value)"/> 
-      <div id="suggestions-${entry.game.id}"></div>
-      <button onclick="saveProcessName('${entry.game.id}', document.getElementById('process-${entry.game.id}').value)">Save</button>
-      <p>${formatTime(entry.playtime)}</p> 
-      <p>${entry.status}</p> 
-      <p></p>
-    </p> 
-    `).join('')
+    <div class="game-card">
+      <div class="game-info">
+        <span class="game-title">${entry.game.title}</span>
+        <span class="game-time">${formatTime(entry.playtime)}</span>
+        <span class="status-badge ${entry.status}">${entry.status}</span>
+      </div>
+      <div class="game-process">
+        <input id="process-${entry.game.id}" placeholder="process.exe" value="${entry.game.processName || ''}" oninput="showSuggestions('${entry.game.id}', this.value)"/>
+        <div id="suggestions-${entry.game.id}" class="suggestions"></div>
+        <button onclick="saveProcessName('${entry.game.id}', document.getElementById('process-${entry.game.id}').value)">Save</button>
+        <button onclick="browseExe('${entry.game.id}')">📁</button>
+      </div>
+    </div>
+  `).join('')
 
   window.electronAPI.sendGameList(entries);
 
@@ -86,7 +92,8 @@ function logout(){
 function startTracking(entryId, gameTitle) {
 
   console.log('startTracking called:', entryId, gameTitle)
-  const statusEl = document.getElementById('active-game-status')
+  const statusEl = document.getElementById('active-game-status').style.display = 'block';
+  document.querySelector('.content').style.paddingTop = '120px';
   console.log('status element:', statusEl)
 
 
@@ -118,6 +125,7 @@ function selectProcess(gameId, name) {
   document.getElementById(`process-${gameId}`).value = name;
   document.getElementById(`suggestions-${gameId}`).innerHTML = '';
 }
+
 
  async function saveProcessName(gameId, processName) {
   let url = API + `/api/games/${gameId}`;
@@ -154,6 +162,13 @@ async function stopTracking() {
   sessionStart = null;
   timerInterval = null;
   loadGames()
+}
+
+async function browseExe(gameId) {
+    const fileName = await window.electronAPI.openFileDialog()
+    if (fileName) {
+        document.getElementById(`process-${gameId}`).value = fileName
+    }
 }
 
 

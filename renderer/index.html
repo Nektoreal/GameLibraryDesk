@@ -5,28 +5,38 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  
-  <h2>Game Library Tracker</h2>
+
   <!-- LOGIN SCREEN -->
-  <div id="login-screen">
-    <input id="username" placeholder="username"/><br><br>
-    <input id="password" placeholder="password" type="password"/><br><br>
-    <button onclick="login()">Login</button>
-    <p id="login-error" style="color: red;"></p>
+  <div id="login-screen" class="login-container">
+    <h1 class="login-title">Game Tracker</h1>
+    <div class="login-box">
+      <input id="username" placeholder="Username"/>
+      <input id="password" placeholder="Password" type="password"/>
+      <button onclick="login()">Login</button>
+      <p id="login-error"></p>
+    </div>
   </div>
 
-  <!-- MAIN SCREEN -->
-  <div id="main-screen" style="display: none;">
-    <p>Hi, <b id="username-display"></b>!</p>
-    <button onclick="logout()">Logout</button>
-    <hr>
-    <p id="active-game-status" style="display: none;">
-      Currently playing: <b id="active-game-name"></b> — <span id="active-game-timer">0:00:00</span>
-    </p>
-    <div id="games-list">Load games-list...</div>
+<!-- MAIN SCREEN -->
+<div id="main-screen" style="display: none;">
+  <div class="header">
+    <span class="header-logo">game<span>.</span>tracker</span>
+    <div class="header-right">
+      <span id="username-display"></span>
+      <button onclick="logout()">Logout</button>
+    </div>
   </div>
+
+  <div id="active-game-status" class="active-game-banner" style="display: none;">
+    ▶ <b id="active-game-name"></b>
+    <span id="active-game-timer">0h 0m</span>
+  </div>
+
+  <div class="content">
+    <div id="games-list"></div>
+  </div>
+</div>
 
   <script src="app.js"></script>
-
 </body>
 </html>

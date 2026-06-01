@@ -13,5 +13,7 @@ contextBridge.exposeInMainWorld('electronAPI', { //creates `window.electronAPI` 
 
   sendGameList: (games) => ipcRenderer.send('games-list', games),
 
-  sendToken: (token) => ipcRenderer.send('token', token)
+  sendToken: (token) => ipcRenderer.send('token', token),
+
+  openFileDialog: () => ipcRenderer.invoke('open-file-dialog')
 })
