@@ -40,6 +40,14 @@ function showMainScreen(name) {
 
 }
 
+function formatTime(seconds){
+  let hours = Math.floor(seconds / 3600) 
+  const remainingSeconds = seconds % 3600
+  let minutes = Math.floor(remainingSeconds / 60)
+
+  return `${hours}h ${minutes}m`
+}
+
 async function loadGames() {
   let url = API + '/api/entries';
   const res = await fetch(url, {
@@ -51,10 +59,12 @@ async function loadGames() {
   const gamesList = document.getElementById("games-list");
 
   gamesList.innerHTML = entries.map(entry => `
-    <p>${entry.game.title} 
+    <p>${entry.game.title} <input id="process-${entry.game.id}" placeholder="process.exe"/>
+      <button onclick="saveProcessName('${entry.game.id}', document.getElementById('process-${entry.game.id}').value)">Save</button>
+      <p>${formatTime(entry.playtime)}</p> 
       <p>${entry.status}</p> 
+      <p></p>
     </p> 
-    <button onclick="startTracking('${entry.id}')">Start</button>
     `).join('')
 
   window.electronAPI.sendGameList(entries);
@@ -70,21 +80,38 @@ function logout(){
   document.getElementById('login-screen').style.display = 'block';
 }
 
-function startTracking(entryId) {
+function startTracking(entryId, gameTitle) {
   activeEntryId = entryId;
   sessionStart = new Date();
 
+  document.getElementById('active-game-status').style.display = 'block';
+  document.getElementById('active-game-name').innerHTML = gameTitle;
+
   timerInterval = setInterval(() => {
     const seconds = Math.floor((new Date() - sessionStart) / 1000);
-    console.log(seconds)
+    document.getElementById('active-game-timer').innerHTML = formatTime(seconds)
   }, 1000);
+}
 
+ async function saveProcessName(gameId, processName) {
+  let url = API + `/api/games/${gameId}`;
+
+  const res = await fetch(url, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify({processName: processName})
+  });
 }
 
 async function stopTracking() {
   let url = API + `/api/entries/${activeEntryId}/playtime`;
   clearInterval(timerInterval);
   let totalTime = Math.floor((new Date() - sessionStart)/1000);
+
+  document.getElementById('active-game-status').style.display = 'none';
 
   const res = await fetch(url, {
     method: 'PUT',
@@ -102,10 +129,12 @@ async function stopTracking() {
   timerInterval = null;
 }
 
+
 window.electronAPI.onGameDetected((event, entry) => {
-    startTracking(entry.id) 
+    startTracking(entry.id, entry.game.title)
 })
 
 window.electronAPI.onGameClosed((event, entry) => {
     stopTracking(entry.id)
 })
+

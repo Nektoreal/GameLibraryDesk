@@ -18,8 +18,10 @@
   <div id="main-screen" style="display: none;">
     <p>Hi, <b id="username-display"></b>!</p>
     <button onclick="logout()">Logout</button>
-    <button onclick="stopTracking()">Stop</button>
     <hr>
+    <p id="active-game-status" style="display: none;">
+      Currently playing: <b id="active-game-name"></b> — <span id="active-game-timer">0:00:00</span>
+    </p>
     <div id="games-list">Load games-list...</div>
   </div>
 
