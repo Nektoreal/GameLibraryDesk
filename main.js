@@ -1,7 +1,7 @@
 //like backend with system
 
 //imports
-const { app, BrowserWindow, ipcMain, powerMonitor, Tray, Menu, nativeImage, dialog } = require('electron')
+const { app, BrowserWindow, ipcMain, powerMonitor, Tray, Menu, nativeImage, dialog, shell } = require('electron')
 const path = require('path')
 
 const { exec } = require('child_process')
@@ -9,6 +9,8 @@ const util = require('util')
 const execPromise = util.promisify(exec)
 
 const fs = require('fs')
+//const { eventLoopUtilization } = require('perf_hooks')
+//const { url } = require('inspector')
 
 
 const STEAM_PATHS = [
@@ -42,6 +44,10 @@ ipcMain.handle('open-file-dialog', async () => {
     return path.basename(result.filePaths[0])
 })
 
+ipcMain.handle('open-external', (event, url) => {
+  shell.openExternal(url)
+})
+
 function createWindow() {
   win = new BrowserWindow({
     width: 1280,
@@ -54,6 +60,7 @@ function createWindow() {
   })
 
   win.loadFile('renderer/index.html')
+  win.setMenuBarVisibility(false)
 //get a request for close window
   win.on('close', (e) => {
     e.preventDefault()

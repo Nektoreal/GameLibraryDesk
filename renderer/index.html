@@ -13,6 +13,10 @@
       <input id="username" placeholder="Username"/>
       <input id="password" placeholder="Password" type="password"/>
       <button onclick="login()">Login</button>
+      <p class="login-register">
+        Don't have an account?
+        <a onclick="window.electronAPI.openExternal('http://127.0.0.1:5500/frontend/index.html')" href="#">Register</a>
+      </p>
       <p id="login-error"></p>
     </div>
   </div>

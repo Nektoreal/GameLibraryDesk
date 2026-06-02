@@ -86,7 +86,7 @@ function logout(){
   //hide main
   document.getElementById('main-screen').style.display = 'none';
   //show login
-  document.getElementById('login-screen').style.display = 'block';
+  document.getElementById('login-screen').style.display = 'flex';
 }
 
 function startTracking(entryId, gameTitle) {

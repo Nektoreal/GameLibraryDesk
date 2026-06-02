@@ -90,6 +90,25 @@ body {
     text-align: center;
 }
 
+
+/* REGISTER */
+.login-register {
+    text-align: center;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-muted);
+}
+
+.login-register a {
+    color: var(--accent);
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.login-register a:hover {
+    opacity: 0.8;
+}
+
 /* HEADER */
 .header {
     position: fixed; top: 0; left: 0; right: 0;
