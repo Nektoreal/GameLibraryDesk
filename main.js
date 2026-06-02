@@ -50,11 +50,12 @@ ipcMain.handle('open-external', (event, url) => {
 
 function createWindow() {
   win = new BrowserWindow({
-    width: 1280,
-    height: 800,
+    width: 900,
+    height: 600,
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true, //make isolation between app.js and main.jss via preload.js
+      center: true,
       preload: path.join(__dirname, 'preload.js')
     }
   })
