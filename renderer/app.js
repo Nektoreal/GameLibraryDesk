@@ -185,6 +185,6 @@ window.electronAPI.onProcessList((event, names) => {
   processList = names
 })
 
-window.electronAPI.onReloadGames(() => {
+/*window.electronAPI.onReloadGames(() => {
   loadGames()
-})
+})*/

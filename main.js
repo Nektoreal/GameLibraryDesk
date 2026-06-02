@@ -86,7 +86,6 @@ function createWindow() {
   tray.on('click', () => win.show())
 
   startProcessWatcher();
-  startLibraryWatcher();
 }
 
 app.whenReady().then(createWindow)
@@ -220,7 +219,7 @@ function autoMatchSteamGames() {
   }
 }
 
-async function startLibraryWatcher() {
+/*async function startLibraryWatcher() {
   setInterval(async () => {
     if (!token) return
 
@@ -233,4 +232,4 @@ async function startLibraryWatcher() {
       win.webContents.send('reload-games')
     }
   }, 30000)
-}
+}*/

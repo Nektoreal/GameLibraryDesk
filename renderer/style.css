@@ -299,3 +299,17 @@ body {
 }
 
 .suggestions div:hover { background: var(--surface3); color: var(--accent); }
+
+/* SCROLL-BAR */
+::-webkit-scrollbar {
+    width: 4px;
+}
+::-webkit-scrollbar-track {
+    background: var(--bg);
+}
+::-webkit-scrollbar-thumb {
+    background: var(--border-strong);
+}
+::-webkit-scrollbar-thumb:hover {
+    background: var(--text-muted);
+}
