@@ -17,5 +17,7 @@ contextBridge.exposeInMainWorld('electronAPI', { //creates `window.electronAPI` 
 
   openFileDialog: () => ipcRenderer.invoke('open-file-dialog'),
 
-  openExternal: (url) => ipcRenderer.invoke('open-external', url)
+  openExternal: (url) => ipcRenderer.invoke('open-external', url),
+
+  onReloadGames: (callback) => ipcRenderer.on('reload-games', callback)
 })

@@ -184,3 +184,7 @@ window.electronAPI.onGameClosed((event, entry) => {
 window.electronAPI.onProcessList((event, names) => {
   processList = names
 })
+
+window.electronAPI.onReloadGames(() => {
+  loadGames()
+})

@@ -9,8 +9,7 @@ const util = require('util')
 const execPromise = util.promisify(exec)
 
 const fs = require('fs')
-//const { eventLoopUtilization } = require('perf_hooks')
-//const { url } = require('inspector')
+
 
 
 const STEAM_PATHS = [
@@ -52,10 +51,10 @@ function createWindow() {
   win = new BrowserWindow({
     width: 900,
     height: 600,
+    center: true,
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true, //make isolation between app.js and main.jss via preload.js
-      center: true,
       preload: path.join(__dirname, 'preload.js')
     }
   })
@@ -87,6 +86,7 @@ function createWindow() {
   tray.on('click', () => win.show())
 
   startProcessWatcher();
+  startLibraryWatcher();
 }
 
 app.whenReady().then(createWindow)
@@ -218,4 +218,19 @@ function autoMatchSteamGames() {
       req.end()
     }
   }
+}
+
+async function startLibraryWatcher() {
+  setInterval(async () => {
+    if (!token) return
+
+    const res = await fetch(`http://localhost:8080/api/entries`, {
+      headers: {'Authorization': `Bearer ${token}`}
+    })
+    const data = await res.json()
+
+    if ( data.length !== gamesList.length) {
+      win.webContents.send('reload-games')
+    }
+  }, 30000)
 }
