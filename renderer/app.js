@@ -51,13 +51,15 @@ function formatTime(seconds){
 }
 
 async function loadGames() {
-  let url = API + '/api/entries';
+  try {
+    let url = API + '/api/entries?size=100';
   const res = await fetch(url, {
     method: 'GET',
     headers: { 'Authorization': `Bearer ${token}`},
   });
 
-  let entries = await res.json();
+  const data = await res.json();
+  const entries = data.content ?? data;
   const gamesList = document.getElementById("games-list");
 
   gamesList.innerHTML = entries.map(entry => `
@@ -77,7 +79,9 @@ async function loadGames() {
   `).join('')
 
   window.electronAPI.sendGameList(entries);
-
+  } catch (err) {
+    console.error('loadGames failed:', err)
+  }
 }
 
 function logout(){
@@ -92,10 +96,7 @@ function logout(){
 function startTracking(entryId, gameTitle) {
 
   console.log('startTracking called:', entryId, gameTitle)
-  const statusEl = document.getElementById('active-game-status').style.display = 'block';
   document.querySelector('.content').style.paddingTop = '120px';
-  console.log('status element:', statusEl)
-
 
   activeEntryId = entryId;
   sessionStart = new Date();
@@ -178,7 +179,7 @@ window.electronAPI.onGameDetected((event, entry) => {
 })
 
 window.electronAPI.onGameClosed((event, entry) => {
-  stopTracking(entry.id)
+  stopTracking()
 })
 
 window.electronAPI.onProcessList((event, names) => {
@@ -188,3 +189,14 @@ window.electronAPI.onProcessList((event, names) => {
 /*window.electronAPI.onReloadGames(() => {
   loadGames()
 })*/
+
+window.electronAPI.onForceSave(() => {
+  if (activeEntryId && sessionStart) {
+    clearInterval(timerInterval)
+    activeEntryId = null
+    sessionStart = null
+    timerInterval = null
+    document.getElementById('active-game-status').style.display = 'none'
+    document.querySelector('.content').style.paddingTop = ''
+  }
+})

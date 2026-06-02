@@ -26,6 +26,7 @@ const EXCLUDED_EXE = [
 let tray = null
 
 let activeGame = null
+let activeGameStartTime = null
 let win = null;
 
 let token = null;
@@ -64,8 +65,17 @@ function createWindow() {
 //get a request for close window
   win.on('close', (e) => {
     e.preventDefault()
+    if (activeGame && activeGameStartTime) {
+      const seconds = Math.floor((new Date() - activeGameStartTime) / 1000)
+      savePlaytimeFromMain(activeGame.id, seconds)
+      activeGame = null
+      activeGameStartTime = null
+      win.webContents.send('force-save-playtime')
+    }
     win.hide()
   })
+  //if game in tray
+
 
   //Create task in tray
   const icon = nativeImage.createEmpty()
@@ -73,9 +83,13 @@ function createWindow() {
   tray.setToolTip('Game Tracker')
 
   const menu = Menu.buildFromTemplate([
-    { label: 'Show', click: () => win.show() },
+    {label: 'Show', click: () => win.show() },
     {type: 'separator' },
     {label: 'Quit', click: () => {
+      if (activeGame && activeGameStartTime) {
+      const seconds = Math.floor((new Date() - activeGameStartTime) / 1000)
+      savePlaytimeFromMain(activeGame.id, seconds)
+    }
       win.destroy()
       app.quit()
     }}
@@ -112,10 +126,12 @@ function startProcessWatcher() {
       console.log('Sending game-detected, entry id:', foundGame.id)
       win.webContents.send('game-detected', foundGame)//send message to app.js like "game is detected, this is info about"
       activeGame = foundGame;
+      activeGameStartTime = new Date()
     }
     if (!foundGame && activeGame !== null) {
       win.webContents.send('game-closed', activeGame) //If the game was not found BUT it was previously active — game has closed. We send a message to app.js and reset activeGame.
       activeGame = null;
+      activeGameStartTime = null;
     }
     console.log('Games list length:', gamesList.length) // ← добавь первой строкой
   }, 3000);
@@ -187,10 +203,11 @@ function findExeForGame(steamPath, installdir) {
 
 function autoMatchSteamGames() {
   const steamGames = scanSteam()
+
+  if(!steamGames) return
+
   console.log('Steam games found:', steamGames ? steamGames.length : 0)
-  if (steamGames) {
     steamGames.forEach(g => console.log(g.name, '→', g.exeName))
-  } 
 
   for (const entry of gamesList) {
     console.log('Comparing:', entry.game.title, 'with Steam games')
@@ -212,24 +229,34 @@ function autoMatchSteamGames() {
           'Content-Length': Buffer.byteLength(data)
         }
       }
-      const req = require('http').request(options)
+      const req = require('http').request(options, (res) => {
+        console.log('Updated processName for', entry.game.title, '→ status:', res.statusCode)
+      })
+      req.on('error', (err) => {
+        console.log('Failed to update processName for', entry.game.title, err.message)
+      })
       req.write(data)
       req.end()
     }
   }
 }
 
-/*async function startLibraryWatcher() {
-  setInterval(async () => {
-    if (!token) return
+function savePlaytimeFromMain(entryId, seconds) {
+  if (!entryId || !token || seconds <= 0) return
 
-    const res = await fetch(`http://localhost:8080/api/entries`, {
-      headers: {'Authorization': `Bearer ${token}`}
-    })
-    const data = await res.json()
-
-    if ( data.length !== gamesList.length) {
-      win.webContents.send('reload-games')
+  const data = JSON.stringify({ seconds: String(seconds) })
+  const req = require('http').request({
+    hostname: 'localhost',
+    port: 8080,
+    path: `/api/entries/${entryId}/playtime`,
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+      'Content-Length': Buffer.byteLength(data)
     }
-  }, 30000)
-}*/
+  })
+  req.on('error', (err) => console.error('Failed to save playtime:', err.message))
+  req.write(data)
+  req.end()
+}
