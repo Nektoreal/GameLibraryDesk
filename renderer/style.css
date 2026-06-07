@@ -1,4 +1,25 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&family=DM+Mono:wght@400;500&display=swap');
+@font-face {
+    font-family: 'DM Sans';
+    src: url('fonts/DM_Sans/static/DMSans-Regular.ttf');
+    font-weight: 400;
+}
+@font-face {
+    font-family: 'DM Sans';
+    src: url('fonts/DM_Sans/static/DMSans-Medium.ttf');
+    font-weight: 500;
+}
+@font-face {
+    font-family: 'DM Mono';
+    src: url('fonts/DM_Mono/DMMono-Regular.ttf');
+    font-weight: 400;
+}
+@font-face {
+    font-family: 'DM Mono';
+    src: url('fonts/DM_Mono/DMMono-Medium.ttf');
+    font-weight: 500;
+}
+
+/*@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&family=DM+Mono:wght@400;500&display=swap');*/
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 

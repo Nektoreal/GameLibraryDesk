@@ -139,6 +139,9 @@ function selectProcess(gameId, name) {
     },
     body: JSON.stringify({processName: processName})
   });
+  if (res.ok) {
+    await loadGames()
+  }
 }
 
 async function stopTracking() {
