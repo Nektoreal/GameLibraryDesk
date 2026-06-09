@@ -172,6 +172,7 @@ async function browseExe(gameId) {
     const fileName = await window.electronAPI.openFileDialog()
     if (fileName) {
         document.getElementById(`process-${gameId}`).value = fileName
+        await saveProcessName(gameId, fileName)
     }
 }
 
@@ -189,9 +190,10 @@ window.electronAPI.onProcessList((event, names) => {
   processList = names
 })
 
-/*window.electronAPI.onReloadGames(() => {
+window.electronAPI.onReloadGames(() => {
+  console.log('reload-games received')
   loadGames()
-})*/
+})
 
 window.electronAPI.onForceSave(() => {
   if (activeEntryId && sessionStart) {

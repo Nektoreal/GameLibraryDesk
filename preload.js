@@ -19,6 +19,7 @@ contextBridge.exposeInMainWorld('electronAPI', { //creates `window.electronAPI` 
 
   openExternal: (url) => ipcRenderer.invoke('open-external', url),
 
-  // onReloadGames: (callback) => ipcRenderer.on('reload-games', callback)
-  onForceSave: (callback) => ipcRenderer.on('force-save-playtime', callback),
+  onReloadGames: (callback) => ipcRenderer.on('reload-games', callback),
+
+  onForceSave: (callback) => ipcRenderer.on('force-save-playtime', callback)
 })

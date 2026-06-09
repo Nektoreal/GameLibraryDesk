@@ -231,6 +231,11 @@ function autoMatchSteamGames() {
       }
       const req = require('http').request(options, (res) => {
         console.log('Updated processName for', entry.game.title, '→ status:', res.statusCode)
+        res.on('data', (d) => console.log('Response:', d.toString()))
+        if(res.statusCode === 200) {
+          console.log('Sending reload-games')
+          win.webContents.send('reload-games')
+        }
       })
       req.on('error', (err) => {
         console.log('Failed to update processName for', entry.game.title, err.message)
@@ -260,3 +265,4 @@ function savePlaytimeFromMain(entryId, seconds) {
   req.write(data)
   req.end()
 }
+
