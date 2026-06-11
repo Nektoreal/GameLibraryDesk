@@ -245,7 +245,7 @@ function autoMatchSteamGames() {
     }
   }
 }
-
+//testtest
 function savePlaytimeFromMain(entryId, seconds) {
   if (!entryId || !token || seconds <= 0) return
 
